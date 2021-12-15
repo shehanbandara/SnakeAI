@@ -36,6 +36,9 @@ class Game:
         pygame.display.set_caption('SnakeAI')
         self.clock = pygame.time.Clock()
 
+        self.reset()
+
+    def reset(self):
         # Initialize the game state
         self.score = 0
         self.food = None
@@ -43,6 +46,7 @@ class Game:
         self.head = Point(self.width/2, self.height/2)
         self.snake = [self.head, Point(
             self.head.x - BLOCKSIZE, self.head.y), Point(self.head.x - (2*BLOCKSIZE), self.head.y)]
+        self.frameIteration = 0
         self.placeFood()
 
     def placeFood(self):
@@ -55,21 +59,12 @@ class Game:
         if self.food in self.snake:
             self.placeFood()
 
-    def play(self):
+    def play(self, action):
         # Collect user input
         for i in pygame.event.get():
             if i.type == pygame.QUIT:
                 pygame.quit()
                 quit()
-            if i.type == pygame.KEYDOWN:
-                if i.key == pygame.K_LEFT:
-                    self.direction = Direction.LEFT
-                elif i.key == pygame.K_RIGHT:
-                    self.direction = Direction.RIGHT
-                elif i.key == pygame.K_UP:
-                    self.direction = Direction.UP
-                elif i.key == pygame.K_DOWN:
-                    self.direction = Direction.DOWN
 
         # Move the snake
         self.move(self.direction)
