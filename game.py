@@ -2,6 +2,7 @@ import pygame
 import random
 from collections import namedtuple
 from enum import Enum
+import numpy as np
 
 pygame.init()
 
@@ -60,6 +61,8 @@ class Game:
             self.placeFood()
 
     def play(self, action):
+        self.frameIteration += 1
+
         # Collect user input
         for i in pygame.event.get():
             if i.type == pygame.QUIT:
@@ -67,18 +70,21 @@ class Game:
                 quit()
 
         # Move the snake
-        self.move(self.direction)
+        self.move(action)
         self.snake.insert(0, self.head)
 
         # Check if the game is over
+        reward = 0
         gameOver = False
-        if self.collision():
+        if self.collision() or self.frameIteration > 100*len(self.snake):
             gameOver = True
-            return gameOver, self.score
+            reward = -10
+            return reward, gameOver, self.score
 
         # Place new food or move
         if self.head == self.food:
             self.score += 1
+            reward = 10
             self.placeFood()
         else:
             self.snake.pop()
@@ -88,30 +94,53 @@ class Game:
         self.clock.tick(SPEED)
 
         # Return gameOver and score
-        return gameOver, self.score
+        return reward, gameOver, self.score
 
-    def move(self, direction):
+    def move(self, action):
+        # [straight, right, left]
+        clockwise = [Direction.RIGHT, Direction.DOWN,
+                     Direction.LEFT, Direction.UP]
+        currentIndex = clockwise.index(self.direction)
+
+        if np.array_equal(action, [1, 0, 0]):
+            # No change in direction
+            newDirection = clockwise[currentIndex]
+
+        elif np.array_equal(action, [0, 1, 0]):
+            nextIndex = (currentIndex + 1) % 4
+            # Turn right
+            newDirection = clockwise[nextIndex]
+
+        else:
+            nextIndex = (currentIndex - 1) % 4
+            # Turn left
+            newDirection = clockwise[nextIndex]
+
+        self.direction = newDirection
+
         x = self.head.x
         y = self.head.y
 
-        if direction == Direction.RIGHT:
+        if self.direction == Direction.RIGHT:
             x += BLOCKSIZE
-        elif direction == Direction.LEFT:
+        elif self.direction == Direction.LEFT:
             x -= BLOCKSIZE
-        elif direction == Direction.DOWN:
+        elif self.direction == Direction.DOWN:
             y += BLOCKSIZE
-        elif direction == Direction.UP:
+        elif self.direction == Direction.UP:
             y -= BLOCKSIZE
 
         self.head = Point(x, y)
 
-    def collision(self):
+    def collision(self, pt=None):
+        if pt is None:
+            pt = self.head
         # Does the snake hit the boundary
-        if self.head.x > self.width - BLOCKSIZE or self.head.x < 0 or self.head.y > self.height - BLOCKSIZE or self.head.y < 0:
+        if pt.x > self.width - BLOCKSIZE or pt.x < 0 or pt.y > self.height - BLOCKSIZE or pt.y < 0:
             return True
 
         # Does the snake hit itself
-        if self.head in self.snake[1:]:
+        if pt in self.snake[1:]:
             return True
 
         return False
@@ -131,17 +160,3 @@ class Game:
         text = Font.render("Score: " + str(self.score), True, WHITE)
         self.display.blit(text, [0, 0])
         pygame.display.flip()
-
-
-if __name__ == '__main__':
-    game = Game()
-
-    while True:
-        gameOver, score = game.play()
-
-        if gameOver == True:
-            break
-
-    print("Final Score: ", score)
-
-    pygame.quit()
