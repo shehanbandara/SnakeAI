@@ -9,18 +9,14 @@ BATCHSIZE = 1000
 LEARNINGRATE = 0.001
 
 
-def train():
-    pass
-
-
-if __name__ == '__main__':
-    train()
-
-
 class Agent:
 
     def __init__(self):
-        pass
+        self.epsilon = 0
+        # Discount rate
+        self.gamma = 0
+        self.numGames = 0
+        self.memory = deque(maxlen=MAXMEMORY)
 
     def getState(self, game):
         pass
@@ -36,3 +32,18 @@ class Agent:
 
     def getAction(self, state):
         pass
+
+
+def train():
+    bestScore = 0
+    totalScore = 0
+    plotScores = []
+    plotMeanScores = []
+    agent = Agent()
+    game = Game()
+    while True:
+        pass
+
+
+if __name__ == '__main__':
+    train()
