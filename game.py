@@ -40,7 +40,7 @@ class Game:
         self.reset()
 
     def reset(self):
-        # Initialize the game state
+        # Reset the game state
         self.score = 0
         self.food = None
         self.direction = Direction.RIGHT
