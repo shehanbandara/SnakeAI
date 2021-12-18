@@ -31,9 +31,6 @@ class Agent:
         #
         self.trainer = None
 
-    def getAction(self, state):
-        pass
-
     def getState(self, game):
         # Store the head of the snake
         head = game.snake[0]
@@ -85,6 +82,38 @@ class Agent:
 
         # Return list as a numpy array
         return np.array(state, dtype=int)
+
+    def getAction(self, state):
+        # The more games the agent plays, the less random actions the agent makes
+        self.epsilon = 80 - self.numGames
+
+        # Initialize the action
+        action = [0, 0, 0]
+
+        # If a random number between 0 and 200 is less than epsilon
+        if random.randint(0, 200) < self.epsilon:
+            # Get a random index
+            index = random.randint(0, 2)
+
+            # Overwrite action with a random action
+            action[index] = 1
+
+        # If a random number between 0 and 200 is greater than epsilon
+        else:
+            # Convert state to a tensor
+            stateTensor = torch.tensor(state, dtype=torch.float)
+
+            # Predict which action to take
+            prediction = self.model.predict(stateTensor)
+
+            # Get index with the best predicted action
+            index = torch.argmax(prediction).item()
+
+            # Overwrite action with a predicted action
+            action[index] = 1
+
+        # Return the action
+        return action
 
     def remember(self, state, action, reward, nextState, gameOver):
         # If memory is exceeded, popleft()
