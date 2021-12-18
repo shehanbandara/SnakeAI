@@ -25,6 +25,12 @@ class Agent:
         # If memory is exceeded, popleft()
         self.memory = deque(maxlen=MAXMEMORY)
 
+        #
+        self.model = None
+
+        #
+        self.trainer = None
+
     def getAction(self, state):
         pass
 
@@ -82,13 +88,26 @@ class Agent:
 
     def remember(self, state, action, reward, nextState, gameOver):
         # If memory is exceeded, popleft()
-        self.memory.append(self, state, action, reward, nextState, gameOver)
+        self.memory.append((state, action, reward, nextState, gameOver))
 
     def trainShortTermMemory(self, state, action, reward, nextState, gameOver):
-        pass
+        # Train for one game iteration
+        self.trainer.trainStep(state, action, reward, nextState, gameOver)
 
     def trainLongTermMemory(self):
-        pass
+        # If there are more 1000 samples in memory
+        if len(self.memory) > BATCHSIZE:
+            # Get a random sample from memory
+            sample = random.sample(self.memory, BATCHSIZE)
+
+        # If there are less than 1000 samples in memory
+        else:
+            # Get all samples in memory
+            sample = self.memory
+
+        # Train for one game iteration
+        states, actions, rewards, nextStates, gameOvers = zip(*sample)
+        self.trainer.trainStep(states, actions, rewards, nextStates, gameOvers)
 
 
 def train():
@@ -96,15 +115,15 @@ def train():
     highScore = 0
     totalScore = 0
 
-    #
+    # Initialize lists to be used for plotting game statistics
     plotScores = []
     plotMeanScores = []
 
-    #
+    # Initialize the agent and game
     agent = Agent()
     game = Game()
 
-    #
+    # Game loop
     while True:
 
         # Get the old state
@@ -121,7 +140,7 @@ def train():
         agent.trainShortTermMemory(
             oldState, action, reward, newState, gameOver)
 
-        #
+        # Store game iteration information in memory
         agent.remember(oldState, action, reward, newState, gameOver)
 
         # If the game is over
