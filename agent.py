@@ -81,7 +81,8 @@ class Agent:
         return np.array(state, dtype=int)
 
     def remember(self, state, action, reward, nextState, gameOver):
-        pass
+        # If memory is exceeded, popleft()
+        self.memory.append(self, state, action, reward, nextState, gameOver)
 
     def trainShortTermMemory(self, state, action, reward, nextState, gameOver):
         pass
