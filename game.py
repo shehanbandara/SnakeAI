@@ -48,6 +48,8 @@ class Game:
         self.snake = [self.head, Point(
             self.head.x - BLOCKSIZE, self.head.y), Point(self.head.x - (2*BLOCKSIZE), self.head.y)]
         self.frameIteration = 0
+
+        # Place food
         self.placeFood()
 
     def placeFood(self):
@@ -55,12 +57,16 @@ class Game:
                            BLOCKSIZE) * BLOCKSIZE
         y = random.randint(0, (self.height - BLOCKSIZE) //
                            BLOCKSIZE) * BLOCKSIZE
+
+        # Place food at a random point
         self.food = Point(x, y)
 
+        # If the food was to be placed inside the Snake, try again
         if self.food in self.snake:
             self.placeFood()
 
     def play(self, action):
+        # Increment the frame iteration counter
         self.frameIteration += 1
 
         # Collect user input
@@ -73,19 +79,22 @@ class Game:
         self.move(action)
         self.snake.insert(0, self.head)
 
-        # Check if the game is over
+        # Initialize the reward and gameOver
         reward = 0
         gameOver = False
+
+        # Check if the game is over
         if self.collision() or self.frameIteration > 100*len(self.snake):
             gameOver = True
             reward = -10
             return reward, gameOver, self.score
 
-        # Place new food or move
+        # If the Snake has reached the food
         if self.head == self.food:
             self.score += 1
             reward = 10
             self.placeFood()
+        # If the Snake has not reached the food
         else:
             self.snake.pop()
 
@@ -93,7 +102,7 @@ class Game:
         self.updateUI()
         self.clock.tick(SPEED)
 
-        # Return gameOver and score
+        # Return reward, gameOver and score
         return reward, gameOver, self.score
 
     def move(self, action):
@@ -102,18 +111,18 @@ class Game:
                      Direction.LEFT, Direction.UP]
         currentIndex = clockwise.index(self.direction)
 
+        # If no change in direction
         if np.array_equal(action, [1, 0, 0]):
-            # No change in direction
             newDirection = clockwise[currentIndex]
 
+        # If turning right
         elif np.array_equal(action, [0, 1, 0]):
             nextIndex = (currentIndex + 1) % 4
-            # Turn right
             newDirection = clockwise[nextIndex]
 
+        # If turning left
         else:
             nextIndex = (currentIndex - 1) % 4
-            # Turn left
             newDirection = clockwise[nextIndex]
 
         self.direction = newDirection
@@ -121,6 +130,7 @@ class Game:
         x = self.head.x
         y = self.head.y
 
+        # Update the head of the Snake depending on the new direction
         if self.direction == Direction.RIGHT:
             x += BLOCKSIZE
         elif self.direction == Direction.LEFT:
@@ -135,6 +145,7 @@ class Game:
     def collision(self, pt=None):
         if pt is None:
             pt = self.head
+
         # Does the snake hit the boundary
         if pt.x > self.width - BLOCKSIZE or pt.x < 0 or pt.y > self.height - BLOCKSIZE or pt.y < 0:
             return True
