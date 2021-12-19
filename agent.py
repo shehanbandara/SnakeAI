@@ -6,7 +6,7 @@ from game import Direction, Game, Point
 from model import LinearQNet, QTrainer
 from plot import plot
 
-MAXMEMORY = 100000
+MAXMEMORY = 100_000
 BATCHSIZE = 1000
 LEARNINGRATE = 0.001
 
@@ -53,22 +53,22 @@ class Agent:
         # Create the state list
         state = [
             # Danger is straight
-            (directionR and game.is_collision(pointR)) or
-            (directionL and game.is_collision(pointL)) or
-            (directionU and game.is_collision(pointU)) or
-            (directionD and game.is_collision(pointD)),
+            (directionR and game.collision(pointR)) or
+            (directionL and game.collision(pointL)) or
+            (directionU and game.collision(pointU)) or
+            (directionD and game.collision(pointD)),
 
             # Danger is right
-            (directionU and game.is_collision(pointR)) or
-            (directionD and game.is_collision(pointL)) or
-            (directionL and game.is_collision(pointU)) or
-            (directionR and game.is_collision(pointD)),
+            (directionU and game.collision(pointR)) or
+            (directionD and game.collision(pointL)) or
+            (directionL and game.collision(pointU)) or
+            (directionR and game.collision(pointD)),
 
             # Danger is left
-            (directionD and game.is_collision(pointR)) or
-            (directionU and game.is_collision(pointL)) or
-            (directionR and game.is_collision(pointU)) or
-            (directionL and game.is_collision(pointD)),
+            (directionD and game.collision(pointR)) or
+            (directionU and game.collision(pointL)) or
+            (directionR and game.collision(pointU)) or
+            (directionL and game.collision(pointD)),
 
             # Move direction
             directionL,
@@ -148,8 +148,8 @@ def train():
     totalScore = 0
 
     # Initialize lists to be used for plotting game statistics
-    plotScores = []
-    plotMeanScores = []
+    scores = []
+    meanScores = []
 
     # Initialize the agent and game
     agent = Agent()
@@ -192,11 +192,11 @@ def train():
                   score, ', High Score:', highScore)
 
             # Plot the game score and mean game score
-            plotScores.append(score)
+            scores.append(score)
             totalScore += score
-            plotMeanScores = totalScore / agent.numGames
-            plotMeanScores.append(plotMeanScores)
-            plot(plotScores, plotMeanScores)
+            meanScore = totalScore / agent.numGames
+            meanScores.append(meanScore)
+            plot(scores, meanScores)
 
 
 if __name__ == '__main__':

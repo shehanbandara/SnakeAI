@@ -28,13 +28,14 @@ class LinearQNet(nn.Module):
 
 
 class QTrainer:
-    def __init(self, model, learningRate, gamma):
+
+    def __init__(self, model, learningRate, gamma):
         self.model = model
         self.learningRate = learningRate
         self.gamma = gamma
         self.lossFunction = nn.MSELoss()
         self.optimizer = optim.Adam(
-            model.parameters(), learningRate=self.learningRate)
+            model.parameters(), lr=self.learningRate)
 
     def trainStep(self, state, action, reward, nextState, gameOver):
         stateTensor = torch.tensor(state, dtype=torch.float)
@@ -57,12 +58,12 @@ class QTrainer:
         for i in range(len(gameOver)):
             QNew = rewardTensor[i]
             if not gameOver[i]:
-                qNew = rewardTensor[i] + self.gamma * \
+                QNew = rewardTensor[i] + self.gamma * \
                     torch.max(self.model(nextStateTensor[i]))
             predictionClone[i][torch.argmax(actionTensor[i]).item()] = QNew
 
         self.optimizer.zero_grad()
-        loss = self.criterion(predictionClone, prediction)
+        loss = self.lossFunction(predictionClone, prediction)
         loss.backward()
 
         self.optimizer.step()
