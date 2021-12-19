@@ -4,6 +4,7 @@ import numpy as np
 from collections import deque
 from game import Direction, Game, Point
 from model import LinearQNet, QTrainer
+from plot import plot
 
 MAXMEMORY = 100000
 BATCHSIZE = 1000
@@ -189,6 +190,13 @@ def train():
             # Print the game iteration, game score, and high score
             print('Game: ', agent.numGames, ', Score:',
                   score, ', High Score:', highScore)
+
+            # Plot the game score and mean game score
+            plotScores.append(score)
+            totalScore += score
+            plotMeanScores = totalScore / agent.numGames
+            plotMeanScores.append(plotMeanScores)
+            plot(plotScores, plotMeanScores)
 
 
 if __name__ == '__main__':
