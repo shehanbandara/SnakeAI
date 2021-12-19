@@ -1,6 +1,11 @@
 # SnakeAI
 A Reinforcement Learning AI Agent That Learns how to Play Snake, The Classic Atari Game.
 
+## Theory: ##
+- **Reinforcement Learning** is an area of machine learning concerned with how intelligent agents take actions in an environment in order to maximize the notion of cumulative reward.<br />
+- **Deep Q Learning** extends reinforcement learning by using a deep neural network to predict actions.<br />
+
+
 ## Setup: ##
 1. Clone this repository
 2. Install IPython
