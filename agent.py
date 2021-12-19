@@ -3,6 +3,7 @@ import torch
 import numpy as np
 from collections import deque
 from game import Direction, Game, Point
+from model import LinearQNet, QTrainer
 
 MAXMEMORY = 100000
 BATCHSIZE = 1000
@@ -17,7 +18,7 @@ class Agent:
         self.epsilon = 0
 
         # Discount rate
-        self.gamma = 0
+        self.gamma = 0.9
 
         # Number of gane iterations
         self.numGames = 0
@@ -25,11 +26,12 @@ class Agent:
         # If memory is exceeded, popleft()
         self.memory = deque(maxlen=MAXMEMORY)
 
-        #
-        self.model = None
+        # Create an instance of the LinearQNet model
+        self.model = LinearQNet(11, 256, 3)
 
-        #
-        self.trainer = None
+        # Create an instance of the QTrainer trainer
+        self.trainer = QTrainer(
+            self.model, learningRate=LEARNINGRATE, gamma=self.gamma)
 
     def getState(self, game):
         # Store the head of the snake
@@ -104,7 +106,7 @@ class Agent:
             stateTensor = torch.tensor(state, dtype=torch.float)
 
             # Predict which action to take
-            prediction = self.model.predict(stateTensor)
+            prediction = self.model(stateTensor)
 
             # Get index with the best predicted action
             index = torch.argmax(prediction).item()
