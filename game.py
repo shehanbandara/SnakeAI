@@ -9,7 +9,7 @@ pygame.init()
 Point = namedtuple('Point', 'x, y')
 Font = pygame.font.SysFont('arial', 25)
 BLOCKSIZE = 20
-SPEED = 15
+SPEED = 40
 
 # RGB Colours
 BLACK = (0, 0, 0)
