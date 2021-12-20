@@ -21,3 +21,13 @@ A Reinforcement Learning AI Agent That Learns how to Play Snake, The Classic Ata
 7. Navigate to the directory with this repository
 8. Run agent.py
 `python agent.py`
+
+## Demo: ##
+
+https://user-images.githubusercontent.com/64564445/146695889-b4e69bc4-e724-4618-abd3-7886df14995c.mov
+
+
+## Results: ##
+After 125 game iterations, the AI agent had a highscore of 49.<br />
+
+<img width="619" alt="SnakeAIStatistics" src="https://user-images.githubusercontent.com/64564445/146695791-0b5d5cd1-74a7-4e2e-ad57-8cd3602151de.png">
